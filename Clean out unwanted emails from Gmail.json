@@ -1,0 +1,132 @@
+{
+  "name": "Clean out unwanted emails from Gmail",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "On clicking 'execute'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        368,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "5b89804f-4509-4e7c-82bf-7b2ffd8d91bc"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "getAll",
+        "returnAll": true,
+        "additionalFields": {
+          "format": "ids",
+          "q": "-in:chats unsubscribe -license -key -password"
+        }
+      },
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        560,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "54612015-f2d4-4e2a-8469-abcf527b657a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GbGrU54wEZSocd9C",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "delete",
+        "messageId": "={{$json[\"id\"]}}"
+      },
+      "name": "Delete Old Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        912,
+        416
+      ],
+      "typeVersion": 1,
+      "id": "3cd7535d-f22a-469e-8cba-f79adb440182",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GbGrU54wEZSocd9C",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "name": "SplitInBatches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        720,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "bd0717f9-b490-478d-806f-3a807e7e4858"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SplitInBatches": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Gmail": {
+      "main": [
+        [
+          {
+            "node": "SplitInBatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On clicking 'execute'": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "7b87fc8d-1e0e-4b9c-bc14-2d82661dd161",
+  "meta": {
+    "templateId": "1153",
+    "instanceId": "433fbc8e65a5431893f0a1ebd2abb00baa8cf0e93d562f2c9d26bc9aa75a5988"
+  },
+  "id": "91Owrl7MN3TDirG0",
+  "tags": []
+}
